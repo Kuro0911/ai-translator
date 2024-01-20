@@ -1,16 +1,21 @@
 import "./App.css";
 import { useState } from "react";
 import { Navbar } from "./components/Navbar/Navbar";
+import { translate } from "./utils/axios";
 function App() {
   const [code, setCode] = useState("");
   const [lang1, setLang1] = useState("");
   const [lang2, setLang2] = useState("");
-  const [translated, setTranslated] = useState("");
+  const [translated, setTranslated] = useState(
+    "Translating Code, Bridging Minds: Your AI-powered Linguist for Programming Languages!"
+  );
+  const [loading, setLoading] = useState(false);
 
   const handleLanguage1Change = (event) => {
     setLang1(event.target.value);
   };
   const handleLanguage2Change = (event) => {
+    console.log(event.target.value);
     setLang2(event.target.value);
   };
   const handleCodeChange = (e) => {
@@ -18,8 +23,17 @@ function App() {
   };
   const handleTranslate = () => {
     console.log(lang1);
-    console.log(lang2);
     console.log(code);
+    console.log(lang2);
+    translate({ original_language: lang1, code: code, final_language: lang2 })
+      .then((res) => {
+        setTranslated(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log(err);
+      });
   };
   let languages = [
     "Python",
@@ -41,15 +55,26 @@ function App() {
         <div className="hero-content text-center w-full">
           <div className="w-full">
             <div class="flex flex-col w-full lg:flex-row justify-center items-center">
-              <div class="grid flex-grow card bg-base-300 rounded-box place-items-center p-4">
-                <div className="mockup-code w-11/12">
+              <div
+                className="grid flex-grow card bg-base-300 rounded-box place-items-center p-4 w-2/4"
+                style={{ height: "auto", minHeight: "32rem" }}
+              >
+                <div
+                  className="mockup-code w-11/12"
+                  style={{ height: "100%", overflow: "auto" }}
+                >
                   <textarea
-                    class="textarea textarea-warning w-11/12"
+                    className="textarea textarea-warning w-11/12"
                     placeholder="Enter your code here"
                     onChange={handleCodeChange}
+                    style={{
+                      height: "100%",
+                      resize: "none",
+                    }}
                   ></textarea>
                 </div>
               </div>
+
               <div class="divider lg:divider-horizontal lg:p-4 lg:!w-[16vw] items-center">
                 <select
                   className="select w-full m-4"
@@ -82,10 +107,23 @@ function App() {
                   ))}
                 </select>
               </div>
-              <div class="grid flex-grow h-32 card bg-base-300 rounded-box place-items-center">
-                <div className="mockup-code w-11/12">
-                  <pre>
-                    <code>without prefix</code>
+              <div
+                className="grid flex-grow card bg-base-300 rounded-box place-items-center w-2/4"
+                style={{ height: "auto", minHeight: "32rem" }}
+              >
+                <div
+                  className="mockup-code w-11/12 mt-6 mb-6"
+                  style={{ height: "100%", overflow: "auto" }}
+                >
+                  <pre
+                    style={{
+                      whiteSpace: "pre-wrap",
+                      wordWrap: "break-word",
+                      overflowWrap: "break-word",
+                      maxHeight: "100%",
+                    }}
+                  >
+                    <code>{translated}</code>
                   </pre>
                 </div>
               </div>
